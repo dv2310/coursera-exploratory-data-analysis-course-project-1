@@ -1,29 +1,46 @@
-dataFile <- "./data/household_power_consumption.txt"
-data <- read.table(dataFile, header=TRUE, sep=";", stringsAsFactors=FALSE, dec=".")
-subSetData <- data[data$Date %in% c("1/2/2007","2/2/2007") ,]
+getwd()
 
-#str(subSetData)
-datetime <- strptime(paste(subSetData$Date, subSetData$Time, sep=" "), "%d/%m/%Y %H:%M:%S") 
-globalActivePower <- as.numeric(subSetData$Global_active_power)
-globalReactivePower <- as.numeric(subSetData$Global_reactive_power)
-voltage <- as.numeric(subSetData$Voltage)
-subMetering1 <- as.numeric(subSetData$Sub_metering_1)
-subMetering2 <- as.numeric(subSetData$Sub_metering_2)
-subMetering3 <- as.numeric(subSetData$Sub_metering_3)
+#read the data fast
+setwd("D:/Coursera/Specialization/Data Science Specialization/Exploratory Data Analysis/week1/exdata_data_household_power_consumption")
+all_data <- read.csv("household_power_consumption.txt", header=T, sep=';', na.strings="?", 
+                     nrows=2075259, check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
 
+library(lubridate)
 
-png("plot4.png", width=480, height=480)
-par(mfrow = c(2, 2)) 
+#character
+class(all_data$Date)
 
-plot(datetime, globalActivePower, type="l", xlab="", ylab="Global Active Power", cex=0.2)
+#the data required
+data_wanted <- subset(all_data,subset = (Date == "1/2/2007" | Date == "2/2/2007"))
 
-plot(datetime, voltage, type="l", xlab="datetime", ylab="Voltage")
+data_wanted$Date <- as.Date(data_wanted$Date,format ="%d/%m/%Y")
 
-plot(datetime, subMetering1, type="l", ylab="Energy Submetering", xlab="")
-lines(datetime, subMetering2, type="l", col="red")
-lines(datetime, subMetering3, type="l", col="blue")
-legend("topright", c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), lty=, lwd=2.5, col=c("black", "red", "blue"), bty="o")
+#change the time to POSIXct
+specific_time <- paste(data_wanted$Date,data_wanted$Time)
+specific_time <- as.POSIXct(specific_time,tz = "GMT")
+specific_time
+Sys.setlocale("LC_TIME","English")
 
-plot(datetime, globalReactivePower, type="l", xlab="datetime", ylab="Global_reactive_power")
+old_par <- par()
+par(mfrow = c(2,2))
 
+#subplot1
+plot(specific_time,data_wanted$Global_active_power,type = "l",xlab = "",ylab = "Global Active Power")
+
+#subplot2
+plot(specific_time,data_wanted$Voltage,xlab = "datetime",ylab = "Voltage",type = "l",col = "black")
+
+#subplot3
+with(data_wanted,{
+    plot(specific_time,Sub_metering_1,type = "l",ylab = "Energy sub metering",xlab = "")
+    lines(specific_time,Sub_metering_2,col = "Red")
+    lines(specific_time,Sub_metering_3,col = "Blue")
+    legend("topright",legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"),col = c("black","red","blue"),lty = 1 ,bty = "n",lwd = 2,cex = 0.8 )
+})
+
+#subplot4
+plot(specific_time,data_wanted$Global_reactive_power,xlab = "datetime",ylab = "Global_reactive_power",type = "l",col="black")
+
+#graphic device
+dev.copy(png, "plot4.png", height=480, width=480)
 dev.off()
