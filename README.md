@@ -32,7 +32,7 @@ web site</a>:
 <li><b>Sub_metering_2</b>: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light. </li>
 <li><b>Sub_metering_3</b>: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.</li>
 </ol>
-
+<hr>
 ## Loading the data
 
 
@@ -56,7 +56,7 @@ Date/Time classes in R using the `strptime()` and `as.Date()`
 functions.
 
 * Note that in this dataset missing values are coded as `?`.
-
+<hr>
 
 ## Making Plots
 
@@ -90,7 +90,7 @@ date. There should be four PNG files and four R code files.
 
 
 The four plots that you will need to construct are shown below. 
-
+<hr>
 
 ### Plot 1
 
@@ -112,3 +112,4 @@ The four plots that you will need to construct are shown below.
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
+<hr>
