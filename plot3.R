@@ -1,17 +1,34 @@
-dataFile <- "./data/household_power_consumption.txt"
-data <- read.table(dataFile, header=TRUE, sep=";", stringsAsFactors=FALSE, dec=".")
-subSetData <- data[data$Date %in% c("1/2/2007","2/2/2007") ,]
+getwd()
 
-#str(subSetData)
-datetime <- strptime(paste(subSetData$Date, subSetData$Time, sep=" "), "%d/%m/%Y %H:%M:%S") 
-globalActivePower <- as.numeric(subSetData$Global_active_power)
-subMetering1 <- as.numeric(subSetData$Sub_metering_1)
-subMetering2 <- as.numeric(subSetData$Sub_metering_2)
-subMetering3 <- as.numeric(subSetData$Sub_metering_3)
+#read the data fast
+setwd("D:/Coursera/Specialization/Data Science Specialization/Exploratory Data Analysis/week1/exdata_data_household_power_consumption")
+all_data <- read.csv("household_power_consumption.txt", header=T, sep=';', na.strings="?", 
+                     nrows=2075259, check.names=F, stringsAsFactors=F, comment.char="", quote='\"')
 
-png("plot3.png", width=480, height=480)
-plot(datetime, subMetering1, type="l", ylab="Energy Submetering", xlab="")
-lines(datetime, subMetering2, type="l", col="red")
-lines(datetime, subMetering3, type="l", col="blue")
-legend("topright", c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), lty=1, lwd=2.5, col=c("black", "red", "blue"))
+library(lubridate)
+
+#character
+class(all_data$Date)
+
+#the data required
+data_wanted <- subset(all_data,subset = (Date == "1/2/2007" | Date == "2/2/2007"))
+
+data_wanted$Date <- as.Date(data_wanted$Date,format ="%d/%m/%Y")
+
+#change the time to POSIXct
+specific_time <- paste(data_wanted$Date,data_wanted$Time)
+specific_time <- as.POSIXct(specific_time,tz = "GMT")
+specific_time
+Sys.setlocale("LC_TIME","English")
+
+#plot3
+with(data_wanted,{
+    plot(specific_time,Sub_metering_1,type = "l",ylab = "Energy sub metering",xlab = "")
+    lines(specific_time,Sub_metering_2,col = "Red")
+    lines(specific_time,Sub_metering_3,col = "Blue")
+    legend("topright",legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"),col = c("black","red","blue"),lty = 1 )
+})
+
+#graphic device
+dev.copy(png, "plot3.png", height=480, width=480)
 dev.off()
